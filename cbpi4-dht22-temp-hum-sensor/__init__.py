@@ -5,9 +5,10 @@ import asyncio
 from cbpi.api import *
 import adafruit_dht
 import time
+import board
+from microcontroller import Pin
 
 logger = logging.getLogger(__name__)
-
 
 @parameters([Property.Select(label="cpioPin", options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], description="GPIO Pin connected to DHT22 data port"),
     Property.Select(label="Type", options = ["Humidity","Temperature"],description = "Select sensor type"),
@@ -23,20 +24,22 @@ class CpbiDht22(CBPiSensor):
         self.humidity = 0
 
         self.cpioPin = int(self.props.get("cpioPin",17))
-        self.Type = int(self.props.get("Type","Temperature"))
+        self.Type = self.props.get("Type","Temperature")
         self.Interval = int(self.props.get("Interval",5))
+
+        logger.info(f"INIT DHT22 {self.Type}")
         
     async def run(self):
-
-        dhtDevice = adafruit_dht.DHT22(self.cpioPin, use_pulseio=False)
+        logger.setLevel(logging.DEBUG)
+        logger.info(f"Board: {Pin(self.cpioPin)}")
+        self.dhtDevice = adafruit_dht.DHT22(Pin(self.cpioPin), use_pulseio=False)
         while self.running == True:
             try:
-                temp = dhtDevice.temperature
-                humidity = dhtDevice.humidity
+                temp = self.dhtDevice.temperature
+                humidity = self.dhtDevice.humidity
             except RuntimeError as error:
                 # Errors happen fairly often, DHT's are hard to read, just keep going
                 logger.info(error.args[0])
-                time.sleep(2.0)
                 continue
             except Exception as error:
                 self.dhtDevice.exit()
