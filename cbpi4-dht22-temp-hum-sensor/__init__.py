@@ -9,7 +9,7 @@ import time
 logger = logging.getLogger(__name__)
 
 
-@parameters([Property.Select(label="cpioPin", options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], description="GPIO Pin connected to the CS Pin of the MAX31865 - For MISO, MOSI, CLK no choice by default it's PIN 9, 10, 11"),
+@parameters([Property.Select(label="cpioPin", options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], description="GPIO Pin connected to DHT22 data port"),
     Property.Select(label="Type", options = ["Humidity","Temperature"],description = "Select sensor type"),
     Property.Select(label="Interval", options=[1,5,10,30,60], description="Interval in Seconds")])
 
