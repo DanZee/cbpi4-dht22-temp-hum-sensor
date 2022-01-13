@@ -35,27 +35,29 @@ class CpbiDht22(CBPiSensor):
         self.dhtDevice = adafruit_dht.DHT22(Pin(self.cpioPin), use_pulseio=False)
         while self.running == True:
             try:
-                temp = self.dhtDevice.temperature
-                humidity = self.dhtDevice.humidity
+
+                if self.Type == "Temperature":
+                    self.value = self.dhtDevice.temperature
+                else:
+                    self.value = self.dhtDevice.humidity
+
+                if self.value != None:
+                    logger.info(f"OK ({self.value})")
+                    self.log_data(self.value)
+                    self.push_update(self.value)
+
             except RuntimeError as error:
                 # Errors happen fairly often, DHT's are hard to read, just keep going
-                logger.info(error.args[0])
+                logger.info(f"Error reading DHT22 on pin {self.cpioPin} - wait for next cycle. Error: {error.args[0]}")
                 continue
             except Exception as error:
                 self.dhtDevice.exit()
-                logger.error(error.args[0])
+                logger.error(f"CRITICAL ERROR: {error.args[0]}")
                 raise error
-
-            if self.Type == "Temperature":
-                self.value = temp
-            else:
-                self.value = humidity
-
-            self.log_data(self.value)
-            self.push_update(self.value)
-
+            
             await asyncio.sleep(self.Interval)
         
+        logger.debug("Exit loop")
         self.dhtDevice.exit()
     
     def get_state(self):
