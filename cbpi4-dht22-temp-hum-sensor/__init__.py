@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import asyncio
+from socket import TIPC_MEDIUM_IMPORTANCE
 from cbpi.api import *
 import adafruit_dht
 import time
@@ -42,7 +43,9 @@ class CpbiDht22(CBPiSensor):
                     self.value = self.dhtDevice.humidity
 
                 if self.value != None:
-                    logger.info(f"OK ({self.value})")
+                    if self.Type == "Temperature" and self.get_config_value("TEMP_UNIT", "C") == "F":
+                        self.value = round((9.0 / 5.0 * self.value + 32), 2)
+                    logger.debug(f"DHT22 OK ({self.Type} = {self.value})")
                     self.log_data(self.value)
                     self.push_update(self.value)
 
