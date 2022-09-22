@@ -20,7 +20,6 @@ setup(name='cbpi4-dht22-temp-hum-sensor',
       'cbpi4-dht22-temp-hum-sensor': ['*','*.txt', '*.rst', '*.yaml']},
       packages=['cbpi4-dht22-temp-hum-sensor'],
         install_requires=[
-        'cbpi>=4.0.0.33',
         'adafruit-circuitpython-dht'
   ],
   long_description=long_description,
